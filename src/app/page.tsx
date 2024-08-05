@@ -7,10 +7,6 @@ interface MessageType {
   content: string;
 }
 
-interface ApiResponse {
-  result: string;
-}
-
 export default function HomePage() {
   const [messages, setMessages] = useState<MessageType[]>([
     {
