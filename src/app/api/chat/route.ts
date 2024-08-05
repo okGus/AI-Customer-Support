@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { env } from "~/env";
+import { ChatCompletionChunk } from 'openai/resources/chat/completions';
 
 const openai = new OpenAI({
     apiKey: env.OPENAI_API_KEY
@@ -67,9 +68,20 @@ export async function POST(req: Request) {
                 ...data
             ],
             model: 'gpt-3.5-turbo',
+            stream: true,
         });
 
-        return NextResponse.json({ result: completion.choices[0]?.message.content }, { status: 200 });
+        const stream = new ReadableStream({
+            async start(controller) {
+                for await (const chunk of completion) {
+                    const content = chunk.choices[0]?.delta?.content ?? '';
+                    controller.enqueue(content);
+                }
+                controller.close();
+            },
+        });
+
+        return new NextResponse(stream)
     } catch (error) {
         return NextResponse.json({ error: 'Error processing your request' }, { status: 500 });
     }
