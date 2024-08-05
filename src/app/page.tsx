@@ -1,6 +1,7 @@
 'use client';
 import { Box, Button, Stack, TextField } from "@mui/material";
 import { useState } from "react";
+import SendIcon from '@mui/icons-material/Send';
 
 interface MessageType {
   role: 'user' | 'assistant';
@@ -78,6 +79,16 @@ export default function HomePage() {
 
   };
 
+  const handleKeyUp = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      try {
+        await sendMessage(); // Await the sendMessage call
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
+    }
+  };
+
   return (
     <Box
       width={'100%'}
@@ -86,20 +97,21 @@ export default function HomePage() {
       flexDirection={'column'}
       justifyContent={'center'}
       alignItems={'center'}
+      bgcolor={'#191a1a'}
     >
       <Stack
-        direction={'column'}
-        width={'60%'}
+        direction={'column-reverse'}
+        width={'70%'}
         height={'80%'}
-        // border={'1px solid #333'}
         p={2}
         overflow={'auto'}
+        flexGrow={1}
+        flexShrink={1}
+        // bgcolor={'#D8D8D8'}
       >
         <Stack
           direction={'column'}
           spacing={2}
-          flexGrow={1}
-          // overflow={'auto'}
         >
           {messages.map((message, index) => (
             <Box
@@ -108,10 +120,11 @@ export default function HomePage() {
               justifyContent={message.role === 'assistant' ? 'flex-start' : 'flex-end'}
             >
               <Box
-                bgcolor={message.role === 'assistant' ? 'primary.main' : 'secondary.main'}
+                bgcolor={message.role === 'assistant' ? '#202222' : '#191a1a'}
                 color={'white'}
                 borderRadius={1}
                 p={2}
+                border={'1px solid #333'}
               >
                 {message.content}
               </Box>
@@ -126,16 +139,48 @@ export default function HomePage() {
         display={'flex'}
         direction={'row'}
         spacing={2}
+        m={2}
+        bgcolor={'#202222'}
       >
         <TextField 
+          autoComplete="off"
           label='Message' 
           fullWidth 
           value={message} 
           onChange={(e) => setMessage(e.target.value)}
+          onKeyUp={handleKeyUp}
+          InputLabelProps={{
+            sx: {
+              '&.MuiFormLabel-filled, &.Mui-focused': {
+                display: 'none' // Hide the label when the input is focused or filled
+              }
+            },
+            style: { color: 'grey' } // Set the color of the label text
+          }}
+          InputProps={{
+            style: { color: 'grey '}
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'transparent', // Default border color
+              },
+              '&:hover fieldset': {
+                borderColor: 'transparent', // Hover border color
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'transparent', // Focused border color
+              },
+            },
+            '& .MuiInputBase-input': {
+              color: 'grey', // Text color
+            },
+          }}
         />
           <Button 
-            variant="contained"
+            // variant="contained"
             onClick={sendMessage}
+            startIcon={<SendIcon />}
           >
             Send
           </Button>
