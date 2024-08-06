@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 import { env } from '~/env';
 
 export async function POST(req: Request) {
-
+  console.log("webhook received");
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the endpoint
   const WEBHOOK_SECRET = env.CLERK_WEBHOOK_SECRET;
 
