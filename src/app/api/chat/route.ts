@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { env } from "~/env";
-import { ChatCompletionChunk } from 'openai/resources/chat/completions';
 
 const openai = new OpenAI({
     apiKey: env.OPENAI_API_KEY
