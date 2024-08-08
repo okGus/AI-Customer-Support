@@ -189,27 +189,27 @@ export default function AIChat() {
         bgcolor={'#191a1a'}
       >
         <Box
-            display={'flex'}
-            width={'100%'}
-            justifyContent={'space-between'}
-            padding={'20px'}
+          display={'flex'}
+          width={'100%'}
+          justifyContent={'space-between'}
+          padding={'20px'}
         >   
-            <Typography 
-                variant={"h6"}
-                color={'grey'}
-            >
-                Consuetudinem Auxilium
-            </Typography>
-            <UserButton 
-                showName 
-                appearance={{
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                    baseTheme: dark,
-                    variables: {
-                        colorText: 'white',
-                    },
-                }}
-            />
+          <Typography 
+            variant={"h6"}
+            color={'grey'}
+          >
+            Consuetudinem Auxilium
+          </Typography>
+          <UserButton 
+            showName 
+            appearance={{
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              baseTheme: dark,
+              variables: {
+                colorText: 'white',
+              },
+            }}
+          />
         </Box>
         <Stack
           direction={'column-reverse'}
@@ -242,8 +242,7 @@ export default function AIChat() {
                 </Box>
               </Box>
             ))}
-          </Stack>
-          
+          </Stack>  
         </Stack>
   
         <Stack
@@ -289,13 +288,13 @@ export default function AIChat() {
               },
             }}
           />
-            <Button 
-              // variant="contained"
-              onClick={handleAwsSubmit}
-              startIcon={<SendIcon />}
-            >
-              Send
-            </Button>
+          <Button 
+            // variant="contained"
+            onClick={handleAwsSubmit}
+            startIcon={<SendIcon />}
+          >
+            Send
+          </Button>
         </Stack>
       </Box>
     );
