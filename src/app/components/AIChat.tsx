@@ -20,6 +20,38 @@ export default function AIChat() {
     ]);
   
     const [message, setMessage] = useState<string>('');
+
+    const { user } = useUser();
+    const { session } = useSession();
+    
+    function createClerkSupabaseClient() {
+        return createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_KEY!,
+            {
+                global: {
+                // Get the custom Supabase token from Clerk
+                fetch: async (url, options = {}) => {
+                    const clerkToken = await session?.getToken({
+                    template: 'supabase',
+                    });
+
+                    // Insert the Clerk Supabase token into the headers
+                    const headers = new Headers(options?.headers);
+                    headers.set('Authorization', `Bearer ${clerkToken}`);
+
+                    // Now call the default fetch
+                    return fetch(url, {
+                    ...options,
+                    headers,
+                    });
+                },
+                },
+            }
+        );
+    }
+
+    const client = createClerkSupabaseClient();
   
     const sendMessage = async () => {
   
@@ -31,7 +63,7 @@ export default function AIChat() {
       ]);
       setMessage('');
   
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/api/openai', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,62 +113,71 @@ export default function AIChat() {
       }
   
     };
+
+    const handleAwsSubmit = async () => {
+      setMessages(prevMessages => [
+        ...prevMessages,
+        { role: 'user', content: message },
+        { role: 'assistant', content: '' }
+      ]);
+      setMessage('');
+
+      try {
+        const response = await fetch('/api/aws', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ user_message: message }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        // console.log('response.json - ', response.json());
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+
+        if (reader) {
+          let result = '';
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value, { stream: true });
+            result += chunk;
+
+            setMessages(prevMessages => {
+              const updatedMessages = [...prevMessages];
+              const lastMessageIndex = updatedMessages.length - 1;
+              const lastMessage = updatedMessages[lastMessageIndex];
+              if (lastMessage?.role === 'assistant') {
+                updatedMessages[lastMessageIndex] = {
+                  ...lastMessage,
+                  content: result
+                } as MessageType;
+              }
+
+              return updatedMessages;
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error processing request.', error);
+      }
+
+    };
   
     const handleKeyUp = async (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
         try {
-          await sendMessage(); // Await the sendMessage call
+          await handleAwsSubmit(); // Await the sendMessage call
         } catch (error) {
           console.error('Error sending message:', error);
         }
       }
     };
 
-    const { user } = useUser();
-    const { session } = useSession();
-    
-    function createClerkSupabaseClient() {
-        return createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_KEY!,
-            {
-                global: {
-                // Get the custom Supabase token from Clerk
-                fetch: async (url, options = {}) => {
-                    const clerkToken = await session?.getToken({
-                    template: 'supabase',
-                    });
-
-                    // Insert the Clerk Supabase token into the headers
-                    const headers = new Headers(options?.headers);
-                    headers.set('Authorization', `Bearer ${clerkToken}`);
-
-                    // Now call the default fetch
-                    return fetch(url, {
-                    ...options,
-                    headers,
-                    });
-                },
-                },
-            }
-        );
-    }
-
-    const client = createClerkSupabaseClient();
-
-    useEffect(() => {
-        if (!user) return;
-
-        const test = async () => {
-            const { data, error } = await client.from('users').select()
-            if (!error) {
-                console.log(data);
-            }
-        };
-
-        void test();
-    }, []);
-  
     return (
       <Box
         width={'100%'}
@@ -250,7 +291,7 @@ export default function AIChat() {
           />
             <Button 
               // variant="contained"
-              onClick={sendMessage}
+              onClick={handleAwsSubmit}
               startIcon={<SendIcon />}
             >
               Send

@@ -10,6 +10,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.624.0",
+    "@aws-sdk/credential-providers": "^3.624.0",
     "@clerk/nextjs": "^5.2.13",
     "@clerk/themes": "^2.1.17",
     "@emotion/react": "^11.13.0",
