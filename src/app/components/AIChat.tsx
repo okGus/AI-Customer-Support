@@ -12,6 +12,27 @@ interface MessageType {
   content: string;
 }
 
+const testConvo = [
+  { id: 1, title: 'test1' },
+  { id: 2, title: 'test2' },
+  { id: 3, title: 'test3' },
+  { id: 4, title: 'test4' },
+  { id: 5, title: 'test5' },
+  { id: 6, title: 'test6' },
+  { id: 7, title: 'test7' },
+  { id: 8, title: 'test8' },
+  { id: 9, title: 'test9' },
+  { id: 10, title: 'test10' },
+  { id: 11, title: 'test11' },
+  { id: 12, title: 'test12' },
+  { id: 13, title: 'test13' },
+  { id: 14, title: 'test14' },
+  { id: 15, title: 'test15' },
+  { id: 16, title: 'test16' },
+  { id: 17, title: 'test17' },
+  { id: 18, title: 'test18' },
+]
+
 export default function AIChat() {
     // Local history of messages
     const [messages, setMessages] = useState<MessageType[]>([
@@ -280,8 +301,8 @@ export default function AIChat() {
         height={'100vh'}
         display={'flex'}
         flexDirection={'column'}
-        justifyContent={'center'}
-        alignItems={'center'}
+        // justifyContent={'center'}
+        // alignItems={'center'}
         bgcolor={'#191a1a'}
         // bgcolor={'#4C4D4D'}
       >
@@ -289,6 +310,7 @@ export default function AIChat() {
         <Box
           display={'flex'}
           width={'100%'}
+          height={'70px'}
           justifyContent={'space-between'}
           padding={'20px'}
         >   
@@ -313,7 +335,9 @@ export default function AIChat() {
         <Box
           display={'flex'}
           width={'100%'}
-          height={'100%'}
+          // height={'100%'}
+          flexGrow={1}
+          overflow={'hidden'}
           // maxHeight={'20%'}
         >
 
@@ -322,17 +346,18 @@ export default function AIChat() {
             // justifyContent={'space-between'}
             width={'25%'}
             // maxHeight={'20%'}
+            overflow={'hidden'}
           >
             <Box
-              height={'100%'}
-              // maxHeight={'10%'}
+              // height={'100%'}
+              // height={'calc(100% - 60px)'}
+              // maxHeight={'80%'}
+              flexGrow={1}
               overflow={'auto'}
             >
               <Stack
-                // p={2}
-                // color={'white'}
+                spacing={1}
                 // bgcolor={'red'}
-                // overflow={'auto'}
               >
                 {conversations.map(convo => (
                   <Button 
@@ -363,11 +388,13 @@ export default function AIChat() {
             height={'100%'}
             justifyContent={'center'}
             alignItems={'center'}
+            overflow={'hidden'}
           >
             <Stack
               direction={'column-reverse'}
               width={'70%'}
-              height={'80%'}
+              // height={'80%'}
+              // height={'calc(100% - 60px)'}
               p={2}
               overflow={'auto'}
               flexGrow={1}
